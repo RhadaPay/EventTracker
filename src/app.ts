@@ -6,7 +6,7 @@ import cors from 'cors';
 import config from 'config';
 import dotenv from "dotenv";
 import { ethers, Wallet } from 'ethers';
-import express from 'express';
+import express, { Request } from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
@@ -15,6 +15,7 @@ import swaggerUi from 'swagger-ui-express';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import { EthRequest } from './interfaces/ethereum.interface';
 
 dotenv.config();
 
@@ -35,17 +36,17 @@ class App {
     this.infuraEndpoint =  process.env.INFURA_ENDPOINT;
 
     this.initializeMiddlewares();
+    this.initializeEthereumConnection();
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
-    this.initializeEthereumConnection();
   }
 
   public listen() {
     this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} =======`);
-      logger.info(`🚀 App listening on the port ${this.port}`);
+      logger.info(`🚀 App listening on port ${this.port}`);
       logger.info(`=================================`);
     });
   }
@@ -94,6 +95,13 @@ class App {
   private initializeEthereumConnection() {
     this.provider = new ethers.providers.JsonRpcProvider(this.infuraEndpoint);
     this.wallet = new ethers.Wallet(this.privateKey, this.provider);
+    logger.info(`Successfully connected to ethereum at ${this.infuraEndpoint}`);
+    this.app.use('/eth\/*', (req: EthRequest, res, next) => {
+      logger.info('Attaching provider');
+      req.provider = this.provider;
+      req.wallet = this.wallet;
+      next();
+    })
   }
 }
 

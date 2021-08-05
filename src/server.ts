@@ -5,12 +5,14 @@ import App from '@/app';
 import IndexRoute from '@routes/index.route';
 import validateEnv from '@utils/validateEnv';
 import EventsRoute from '@routes/event.route';
+import EthereumRoute from './routes/ethereum.route';
 
 validateEnv();
 
 const app = new App([
   new IndexRoute(),
-  new EventsRoute(),  
+  new EventsRoute(),
+  new EthereumRoute()  
 ]);
 
 app.listen();
