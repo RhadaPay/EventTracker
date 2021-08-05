@@ -4,7 +4,9 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import config from 'config';
-import express from 'express';
+import dotenv from "dotenv";
+import { ethers, Wallet } from 'ethers';
+import express, { Request } from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import morgan from 'morgan';
@@ -13,18 +15,28 @@ import swaggerUi from 'swagger-ui-express';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import { EthRequest } from './interfaces/ethereum.interface';
+
+dotenv.config();
 
 class App {
   public app: express.Application;
   public port: string | number;
   public env: string;
+  private privateKey: string;
+  private infuraEndpoint: string;
+  public provider: ethers.providers.JsonRpcProvider;
+  public wallet: Wallet;
 
   constructor(routes: Routes[]) {
     this.app = express();
     this.port = process.env.PORT || 3000;
     this.env = process.env.NODE_ENV || 'development';
+    this.privateKey = process.env.PRIVATE_KEY;
+    this.infuraEndpoint =  process.env.INFURA_ENDPOINT;
 
     this.initializeMiddlewares();
+    this.initializeEthereumConnection();
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
@@ -34,7 +46,7 @@ class App {
     this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} =======`);
-      logger.info(`🚀 App listening on the port ${this.port}`);
+      logger.info(`🚀 App listening on port ${this.port}`);
       logger.info(`=================================`);
     });
   }
@@ -78,6 +90,18 @@ class App {
 
   private initializeErrorHandling() {
     this.app.use(errorMiddleware);
+  }
+
+  private initializeEthereumConnection() {
+    this.provider = new ethers.providers.JsonRpcProvider(this.infuraEndpoint);
+    this.wallet = new ethers.Wallet(this.privateKey, this.provider);
+    logger.info(`Successfully connected to ethereum at ${this.infuraEndpoint}`);
+    this.app.use('/eth\/*', (req: EthRequest, res, next) => {
+      logger.info('Attaching provider');
+      req.provider = this.provider;
+      req.wallet = this.wallet;
+      next();
+    })
   }
 }
 

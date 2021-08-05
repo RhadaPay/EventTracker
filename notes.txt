@@ -1,0 +1,50 @@
+Notes:
+
+Data model defines:
+  Job:
+    - creator
+    - downPayment
+    - incrementPay (looks like per transaction payment %age or number)
+    - timeBeforeStakeRemoved
+    - state (of job)
+    - signed (creator and applicant)
+
+
+Creator and applicant model, a creator creates a job, then applicants are
+free to apply, the creator? presumably chooses an applicant who is in finalApplicant
+
+Questions:
+
+Initialisation
+1) Why is the final applicant not saved in the job struct
+2) Why do we need to store the list of past applicants 
+3) What is the exact rationale behind timeBeforeStakeRemoved
+4) Can you explain to me a bit more about events in solidity
+5) Do you need an empty constructor
+
+
+Public Functions
+1) StakeEther, I feel like this can be simplified:
+  -- why not set the downpayment to the initial stake, and just do a null check?
+  -- why not rename the function to setDownPayment()
+  -- why not update the job directly on creation with the value of the staked ethers
+  -- we need to check restrictions on downPayments, superfluid has min requirements
+
+2) createJob:
+  -- why is the jobID the jobs.length - 1 and not jobs.lenght + 1?
+  -- we could set the downPayment as msg.value with a guard
+
+3) submitWork:
+  -- need to understand your expected flow for this submit work piece. 
+    We might be overcomplicating it a bit
+
+
+Suggestions for improvement:
+1) Add error messages to require statements
+2) Numeric job ids or hashes?
+3) vanilla modifiers for null checks:
+  modifier requireNonZero(uint value) {
+    require(value > 0, "Value must be greater than zero, passed %s", value);
+    _;
+  }
+4) Missing a _modifyPaymentStream method

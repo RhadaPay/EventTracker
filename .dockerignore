@@ -19,3 +19,8 @@ docker-compose.yml
 
 # editors and IDEs
 .vscode/
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
