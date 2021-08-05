@@ -4,6 +4,8 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import config from 'config';
+import dotenv from "dotenv";
+import { ethers, Wallet } from 'ethers';
 import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -14,20 +16,29 @@ import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 
+dotenv.config();
+
 class App {
   public app: express.Application;
   public port: string | number;
   public env: string;
+  private privateKey: string;
+  private infuraEndpoint: string;
+  public provider: ethers.providers.JsonRpcProvider;
+  public wallet: Wallet;
 
   constructor(routes: Routes[]) {
     this.app = express();
     this.port = process.env.PORT || 3000;
     this.env = process.env.NODE_ENV || 'development';
+    this.privateKey = process.env.PRIVATE_KEY;
+    this.infuraEndpoint =  process.env.INFURA_ENDPOINT;
 
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
+    this.initializeEthereumConnection();
   }
 
   public listen() {
@@ -78,6 +89,11 @@ class App {
 
   private initializeErrorHandling() {
     this.app.use(errorMiddleware);
+  }
+
+  private initializeEthereumConnection() {
+    this.provider = new ethers.providers.JsonRpcProvider(this.infuraEndpoint);
+    this.wallet = new ethers.Wallet(this.privateKey, this.provider);
   }
 }
 
