@@ -1,5 +1,5 @@
-import { Event, NamedEvent } from '@/interfaces/events.interface';
+import { Event } from '@/interfaces/events.interface';
 
 export const eventModel: Event[] = [
-  { id: 1, event: NamedEvent.AppDownload, createdOn: new Date().toDateString() }  
+  { id: 1, eventStreamId: 1, createdOn: new Date().toDateString() }  
 ]

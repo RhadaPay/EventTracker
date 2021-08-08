@@ -35,7 +35,6 @@
     "pm2": "^5.1.0",
     "swagger-jsdoc": "^6.0.0",
     "swagger-ui-express": "^4.1.6",
-    "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.5",
     "winston": "^3.3.3",
@@ -73,6 +72,7 @@
     "nodemon": "^2.0.9",
     "prettier": "^2.3.2",
     "supertest": "^6.1.3",
+    "ts-jest": "^27.0.4",
     "tsconfig-paths": "^3.10.1",
     "typechain": "^5.1.2"
   }

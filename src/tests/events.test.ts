@@ -1,7 +1,6 @@
 import request from 'supertest';
 import App from '@/app';
 import { CreateEventDto } from '@dtos/events.dto';
-import { NamedEvent } from '@interfaces/events.interface';
 import { eventModel } from '@models/events.model';
 import EventsRoute from '@routes/event.route';
 
@@ -25,16 +24,23 @@ describe('Testing Events', () => {
   describe('[POST] /events', () => {
     it('response statusCode 201 / created', async () => {
       const eventData: CreateEventDto = {
-        event: NamedEvent.PriceChange,
+        eventStreamId: 1,
       };
       return request(app.getServer()).post(`${eventsRoute.path}`).send(eventData).expect(201);
     });
 
-    it('response statusCode 400 for bad enum', async () => {
+    it('response statusCode 400 for str', async () => {
       const eventData = {
-        event: "not an enum value",
+        eventStreamId: "1",
       };
       return request(app.getServer()).post(`${eventsRoute.path}`).send(eventData).expect(400);
     });
+
+    it('response statusCode 400 for <0', async () => {
+      const eventData: CreateEventDto = {
+        eventStreamId: -1,
+      };
+      return request(app.getServer()).post(`${eventsRoute.path}`).send(eventData).expect(400);
+    });    
   });
 });

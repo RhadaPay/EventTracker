@@ -23,16 +23,20 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface RhadaPayInterface extends ethers.utils.Interface {
   functions: {
     "applyForJob(uint256)": FunctionFragment;
+    "changeRefreshRate(uint8,uint256)": FunctionFragment;
     "chooseApplicant(address,uint256)": FunctionFragment;
-    "configureJobDownPayment(uint256,uint256)": FunctionFragment;
-    "configureJobIncrementPay(uint256,uint256)": FunctionFragment;
-    "configureJobTimeBeforeStakeRemoved(uint256,uint256)": FunctionFragment;
+    "configureAmount(uint256,uint256)": FunctionFragment;
+    "createEventStream(string)": FunctionFragment;
     "createJob(uint256,uint256,uint256)": FunctionFragment;
-    "finalSign(uint256)": FunctionFragment;
+    "eventStreams(uint256)": FunctionFragment;
+    "finalApplicant(uint256)": FunctionFragment;
+    "finalSign(bool,uint256)": FunctionFragment;
+    "getEventStreams()": FunctionFragment;
+    "getJobs()": FunctionFragment;
     "initApplicantSign(uint256)": FunctionFragment;
     "initCreatorSign(uint256)": FunctionFragment;
-    "removeStake(uint256)": FunctionFragment;
-    "stakeEther(uint256)": FunctionFragment;
+    "jobToApplicants(uint256,uint256)": FunctionFragment;
+    "jobs(uint256)": FunctionFragment;
     "submitWork(uint256)": FunctionFragment;
   };
 
@@ -41,29 +45,42 @@ interface RhadaPayInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "changeRefreshRate",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "chooseApplicant",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "configureJobDownPayment",
+    functionFragment: "configureAmount",
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "configureJobIncrementPay",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "configureJobTimeBeforeStakeRemoved",
-    values: [BigNumberish, BigNumberish]
+    functionFragment: "createEventStream",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "createJob",
     values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "finalSign",
+    functionFragment: "eventStreams",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "finalApplicant",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "finalSign",
+    values: [boolean, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getEventStreams",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "getJobs", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "initApplicantSign",
     values: [BigNumberish]
@@ -73,13 +90,10 @@ interface RhadaPayInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "removeStake",
-    values: [BigNumberish]
+    functionFragment: "jobToApplicants",
+    values: [BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "stakeEther",
-    values: [BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "jobs", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "submitWork",
     values: [BigNumberish]
@@ -90,23 +104,36 @@ interface RhadaPayInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "changeRefreshRate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "chooseApplicant",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "configureJobDownPayment",
+    functionFragment: "configureAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "configureJobIncrementPay",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "configureJobTimeBeforeStakeRemoved",
+    functionFragment: "createEventStream",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "createJob", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "eventStreams",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "finalApplicant",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "finalSign", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getEventStreams",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getJobs", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "initApplicantSign",
     data: BytesLike
@@ -116,33 +143,37 @@ interface RhadaPayInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "removeStake",
+    functionFragment: "jobToApplicants",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "stakeEther", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "jobs", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "submitWork", data: BytesLike): Result;
 
   events: {
+    "AmountChanged(uint256,uint256)": EventFragment;
     "ApplicantApplied(address,uint256)": EventFragment;
     "ApplicantChosen(address,uint256)": EventFragment;
-    "ApplicantSigned(uint256,address)": EventFragment;
-    "CreatorSigned(uint256,address)": EventFragment;
-    "DownpaymentChanged()": EventFragment;
+    "ApplicantSigned(address,uint256)": EventFragment;
+    "CreatorSigned(address,uint256)": EventFragment;
+    "EventStreamCreated(string,uint256)": EventFragment;
+    "FinalResult(address,address,uint256,bool)": EventFragment;
     "FinalSign(address,address,uint256)": EventFragment;
     "JobCompleted(uint256)": EventFragment;
     "JobCreated(address,uint256,uint256,uint256,uint256)": EventFragment;
-    "StakeRemoved(address,uint256,uint256)": EventFragment;
+    "UpdateNumberOfEvents(uint256,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AmountChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApplicantApplied"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApplicantChosen"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApplicantSigned"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "CreatorSigned"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "DownpaymentChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EventStreamCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FinalResult"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FinalSign"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "JobCompleted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "JobCreated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "StakeRemoved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdateNumberOfEvents"): EventFragment;
 }
 
 export class RhadaPay extends BaseContract {
@@ -194,41 +225,85 @@ export class RhadaPay extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    changeRefreshRate(
+      newRefreshRate: BigNumberish,
+      jobID: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     chooseApplicant(
       chosenApplicant: string,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    configureJobDownPayment(
-      newDownPayment: BigNumberish,
+    configureAmount(
+      newAmount: BigNumberish,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    configureJobIncrementPay(
-      newIncrement: BigNumberish,
-      jobID: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    configureJobTimeBeforeStakeRemoved(
-      newTimeBeforeCanRemove: BigNumberish,
-      jobID: BigNumberish,
+    createEventStream(
+      _descriptor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     createJob(
-      _downPayment: BigNumberish,
-      _incrementPay: BigNumberish,
-      _timeBeforeStakeRemoved: BigNumberish,
+      _initAmount: BigNumberish,
+      _refreshRate: BigNumberish,
+      _eventStreamId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    eventStreams(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string] & { descriptor: string }>;
+
+    finalApplicant(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     finalSign(
+      result: boolean,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    getEventStreams(
+      overrides?: CallOverrides
+    ): Promise<
+      [([string, string[]] & { descriptor: string; cid: string[] })[]]
+    >;
+
+    getJobs(
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        ([
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          boolean,
+          boolean,
+          boolean,
+          number
+        ] & {
+          creator: string;
+          amount: BigNumber;
+          refreshRate: BigNumber;
+          eventStreamId: BigNumber;
+          eventsRecorded: BigNumber;
+          creatorSigned: boolean;
+          applicantSigned: boolean;
+          workSubmitted: boolean;
+          state: number;
+        })[]
+      ]
+    >;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -237,18 +312,41 @@ export class RhadaPay extends BaseContract {
 
     initCreatorSign(
       jobID: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    removeStake(
-      jobID: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    stakeEther(
-      jobID: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    jobToApplicants(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    jobs(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        boolean,
+        boolean,
+        boolean,
+        number
+      ] & {
+        creator: string;
+        amount: BigNumber;
+        refreshRate: BigNumber;
+        eventStreamId: BigNumber;
+        eventsRecorded: BigNumber;
+        creatorSigned: boolean;
+        applicantSigned: boolean;
+        workSubmitted: boolean;
+        state: number;
+      }
+    >;
 
     submitWork(
       jobID: BigNumberish,
@@ -261,41 +359,78 @@ export class RhadaPay extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  changeRefreshRate(
+    newRefreshRate: BigNumberish,
+    jobID: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   chooseApplicant(
     chosenApplicant: string,
     jobID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  configureJobDownPayment(
-    newDownPayment: BigNumberish,
+  configureAmount(
+    newAmount: BigNumberish,
     jobID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  configureJobIncrementPay(
-    newIncrement: BigNumberish,
-    jobID: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  configureJobTimeBeforeStakeRemoved(
-    newTimeBeforeCanRemove: BigNumberish,
-    jobID: BigNumberish,
+  createEventStream(
+    _descriptor: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   createJob(
-    _downPayment: BigNumberish,
-    _incrementPay: BigNumberish,
-    _timeBeforeStakeRemoved: BigNumberish,
+    _initAmount: BigNumberish,
+    _refreshRate: BigNumberish,
+    _eventStreamId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  eventStreams(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  finalApplicant(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   finalSign(
+    result: boolean,
     jobID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  getEventStreams(
+    overrides?: CallOverrides
+  ): Promise<([string, string[]] & { descriptor: string; cid: string[] })[]>;
+
+  getJobs(
+    overrides?: CallOverrides
+  ): Promise<
+    ([
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      boolean,
+      boolean,
+      boolean,
+      number
+    ] & {
+      creator: string;
+      amount: BigNumber;
+      refreshRate: BigNumber;
+      eventStreamId: BigNumber;
+      eventsRecorded: BigNumber;
+      creatorSigned: boolean;
+      applicantSigned: boolean;
+      workSubmitted: boolean;
+      state: number;
+    })[]
+  >;
 
   initApplicantSign(
     jobID: BigNumberish,
@@ -304,18 +439,41 @@ export class RhadaPay extends BaseContract {
 
   initCreatorSign(
     jobID: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  removeStake(
-    jobID: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  stakeEther(
-    jobID: BigNumberish,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  jobToApplicants(
+    arg0: BigNumberish,
+    arg1: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  jobs(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      boolean,
+      boolean,
+      boolean,
+      number
+    ] & {
+      creator: string;
+      amount: BigNumber;
+      refreshRate: BigNumber;
+      eventStreamId: BigNumber;
+      eventsRecorded: BigNumber;
+      creatorSigned: boolean;
+      applicantSigned: boolean;
+      workSubmitted: boolean;
+      state: number;
+    }
+  >;
 
   submitWork(
     jobID: BigNumberish,
@@ -325,38 +483,81 @@ export class RhadaPay extends BaseContract {
   callStatic: {
     applyForJob(jobID: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
+    changeRefreshRate(
+      newRefreshRate: BigNumberish,
+      jobID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     chooseApplicant(
       chosenApplicant: string,
       jobID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    configureJobDownPayment(
-      newDownPayment: BigNumberish,
+    configureAmount(
+      newAmount: BigNumberish,
       jobID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    configureJobIncrementPay(
-      newIncrement: BigNumberish,
-      jobID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    configureJobTimeBeforeStakeRemoved(
-      newTimeBeforeCanRemove: BigNumberish,
-      jobID: BigNumberish,
+    createEventStream(
+      _descriptor: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
     createJob(
-      _downPayment: BigNumberish,
-      _incrementPay: BigNumberish,
-      _timeBeforeStakeRemoved: BigNumberish,
+      _initAmount: BigNumberish,
+      _refreshRate: BigNumberish,
+      _eventStreamId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    finalSign(jobID: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    eventStreams(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    finalApplicant(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    finalSign(
+      result: boolean,
+      jobID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    getEventStreams(
+      overrides?: CallOverrides
+    ): Promise<([string, string[]] & { descriptor: string; cid: string[] })[]>;
+
+    getJobs(
+      overrides?: CallOverrides
+    ): Promise<
+      ([
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        boolean,
+        boolean,
+        boolean,
+        number
+      ] & {
+        creator: string;
+        amount: BigNumber;
+        refreshRate: BigNumber;
+        eventStreamId: BigNumber;
+        eventsRecorded: BigNumber;
+        creatorSigned: boolean;
+        applicantSigned: boolean;
+        workSubmitted: boolean;
+        state: number;
+      })[]
+    >;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -368,14 +569,51 @@ export class RhadaPay extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    removeStake(jobID: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    jobToApplicants(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    stakeEther(jobID: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    jobs(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        boolean,
+        boolean,
+        boolean,
+        number
+      ] & {
+        creator: string;
+        amount: BigNumber;
+        refreshRate: BigNumber;
+        eventStreamId: BigNumber;
+        eventsRecorded: BigNumber;
+        creatorSigned: boolean;
+        applicantSigned: boolean;
+        workSubmitted: boolean;
+        state: number;
+      }
+    >;
 
     submitWork(jobID: BigNumberish, overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
+    AmountChanged(
+      amount?: null,
+      jobID?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { amount: BigNumber; jobID: BigNumber }
+    >;
+
     ApplicantApplied(
       applicant?: null,
       jobID?: null
@@ -393,22 +631,38 @@ export class RhadaPay extends BaseContract {
     >;
 
     ApplicantSigned(
-      jobID?: null,
-      applicant?: null
+      applicant?: null,
+      jobID?: null
     ): TypedEventFilter<
-      [BigNumber, string],
-      { jobID: BigNumber; applicant: string }
+      [string, BigNumber],
+      { applicant: string; jobID: BigNumber }
     >;
 
     CreatorSigned(
-      jobID?: null,
-      creator?: null
+      creator?: null,
+      jobID?: null
     ): TypedEventFilter<
-      [BigNumber, string],
-      { jobID: BigNumber; creator: string }
+      [string, BigNumber],
+      { creator: string; jobID: BigNumber }
     >;
 
-    DownpaymentChanged(): TypedEventFilter<[], {}>;
+    EventStreamCreated(
+      descriptor?: null,
+      streamID?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { descriptor: string; streamID: BigNumber }
+    >;
+
+    FinalResult(
+      creator?: null,
+      applicant?: null,
+      jobID?: null,
+      result?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber, boolean],
+      { creator: string; applicant: string; jobID: BigNumber; result: boolean }
+    >;
 
     FinalSign(
       creator?: null,
@@ -425,33 +679,38 @@ export class RhadaPay extends BaseContract {
 
     JobCreated(
       creator?: null,
-      downPayment?: null,
-      incrementPay?: null,
-      timeBeforeStakeRemoved?: null,
-      jobID?: null
+      initAmount?: null,
+      refreshRate?: null,
+      jobID?: null,
+      eventStreamId?: null
     ): TypedEventFilter<
       [string, BigNumber, BigNumber, BigNumber, BigNumber],
       {
         creator: string;
-        downPayment: BigNumber;
-        incrementPay: BigNumber;
-        timeBeforeStakeRemoved: BigNumber;
+        initAmount: BigNumber;
+        refreshRate: BigNumber;
         jobID: BigNumber;
+        eventStreamId: BigNumber;
       }
     >;
 
-    StakeRemoved(
-      creator?: null,
-      amount?: null,
+    UpdateNumberOfEvents(
+      newTotal?: null,
       jobID?: null
     ): TypedEventFilter<
-      [string, BigNumber, BigNumber],
-      { creator: string; amount: BigNumber; jobID: BigNumber }
+      [BigNumber, BigNumber],
+      { newTotal: BigNumber; jobID: BigNumber }
     >;
   };
 
   estimateGas: {
     applyForJob(
+      jobID: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    changeRefreshRate(
+      newRefreshRate: BigNumberish,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -462,35 +721,43 @@ export class RhadaPay extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    configureJobDownPayment(
-      newDownPayment: BigNumberish,
+    configureAmount(
+      newAmount: BigNumberish,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    configureJobIncrementPay(
-      newIncrement: BigNumberish,
-      jobID: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    configureJobTimeBeforeStakeRemoved(
-      newTimeBeforeCanRemove: BigNumberish,
-      jobID: BigNumberish,
+    createEventStream(
+      _descriptor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     createJob(
-      _downPayment: BigNumberish,
-      _incrementPay: BigNumberish,
-      _timeBeforeStakeRemoved: BigNumberish,
+      _initAmount: BigNumberish,
+      _refreshRate: BigNumberish,
+      _eventStreamId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    eventStreams(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    finalApplicant(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     finalSign(
+      result: boolean,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    getEventStreams(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getJobs(overrides?: CallOverrides): Promise<BigNumber>;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -499,18 +766,16 @@ export class RhadaPay extends BaseContract {
 
     initCreatorSign(
       jobID: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    removeStake(
-      jobID: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    stakeEther(
-      jobID: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    jobToApplicants(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    jobs(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     submitWork(
       jobID: BigNumberish,
@@ -524,41 +789,55 @@ export class RhadaPay extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    changeRefreshRate(
+      newRefreshRate: BigNumberish,
+      jobID: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     chooseApplicant(
       chosenApplicant: string,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    configureJobDownPayment(
-      newDownPayment: BigNumberish,
+    configureAmount(
+      newAmount: BigNumberish,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    configureJobIncrementPay(
-      newIncrement: BigNumberish,
-      jobID: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    configureJobTimeBeforeStakeRemoved(
-      newTimeBeforeCanRemove: BigNumberish,
-      jobID: BigNumberish,
+    createEventStream(
+      _descriptor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     createJob(
-      _downPayment: BigNumberish,
-      _incrementPay: BigNumberish,
-      _timeBeforeStakeRemoved: BigNumberish,
+      _initAmount: BigNumberish,
+      _refreshRate: BigNumberish,
+      _eventStreamId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    eventStreams(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    finalApplicant(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     finalSign(
+      result: boolean,
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    getEventStreams(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getJobs(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -567,17 +846,18 @@ export class RhadaPay extends BaseContract {
 
     initCreatorSign(
       jobID: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeStake(
-      jobID: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    stakeEther(
-      jobID: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    jobToApplicants(
+      arg0: BigNumberish,
+      arg1: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    jobs(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     submitWork(

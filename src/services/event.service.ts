@@ -20,4 +20,5 @@ export class EventService {
     this.events = [...this.events, newEvent];
     return newEvent
   }
+  
 }

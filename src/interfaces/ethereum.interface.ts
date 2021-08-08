@@ -1,7 +1,6 @@
-import { ethers, Wallet } from "ethers";
 import { Request } from "express";
+import { RhadaPay } from "./typechain";
 
 export interface EthRequest extends Request {
-  provider?: ethers.providers.JsonRpcProvider;
-  wallet?: Wallet;
+  contract: RhadaPay;
 }
