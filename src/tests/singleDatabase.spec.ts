@@ -1,6 +1,8 @@
 import { Event } from '@/interfaces/events.interface';
-import { collectionFromSchema, create, createDB, createQuery, setupClient, setupDB } from '@/plugins/database';
-import { Client, PrivateKey, QueryJSON, ThreadID } from '@textile/hub';
+import { collectionFromSchema, create, setupClient } from '@/plugins/database';
+import { contract } from '@/plugins/ethereum';
+import { EthereumService } from '@/services/ethereum.service';
+import { Client, ThreadID } from '@textile/hub';
 import { Where } from '@textile/threads';
 
 const key = 'b76eqxm5clyev5ns5wlvl3ke7fm';
@@ -15,12 +17,12 @@ describe('Accessing a single db instance', () => {
   let client: Client;
   let thread: ThreadID;
   let collection: any;
-  const THREADNAME = 'JordanLevi';
+  const THREADNAME = 'JordanLevi2';
+  const EVENTSTREAMID = 0;
 
   const collectionName = 'Test';
-  const event/* : Event */ = {
-    _id: '0',
-    eventId: "0",
+  const event: Event = {
+    eventId: 0,
     eventStreamId: 1,
     createdOn: new Date().toString()
   }
@@ -28,7 +30,6 @@ describe('Accessing a single db instance', () => {
 
   it('Is able to connect to the existing client', async () => {
     client = await setupClient({ key, secret });
-    console.log(client);
   });
 
   it('creates the db if it does not exist', async () => {
@@ -46,12 +47,41 @@ describe('Accessing a single db instance', () => {
     const threadResponse = await client.getThread(THREADNAME);
     expect(threadResponse.name).toEqual(THREADNAME);
     thread = ThreadID.fromString(threadResponse.id);
-    console.log(thread);
   });
 
   it('Can query an existing collection', async () => {
     const found = await client.find(thread, collectionName, {})
-    console.log('found:', found.length, found)
-    expect(found.length).toEqual(1);
+    expect(found.length).toBeGreaterThan(0);
   });
+
+
+  it(`Can query an existing collection by stream id === ${EVENTSTREAMID}`, async () => {
+    const query = new Where('eventStreamId').eq(EVENTSTREAMID);
+    const found = await client.find(thread, collectionName, query)
+    expect(found.length).toBeGreaterThan(0);
+  });
+
+  it('Can add some events', async () => {
+    const NUMBER_OF_EVENTS = 5;
+    const mockEvents: Event[] = new EthereumService(contract).mockEvents(NUMBER_OF_EVENTS)
+    await client.create(thread, collectionName, mockEvents);
+    const found = await client.find(thread, collectionName, {})
+    expect(found.length).toBeGreaterThanOrEqual(NUMBER_OF_EVENTS);
+  });
+
+  it('Can query by event stream id', async () => {
+    const query = new Where('eventStreamId').eq(0);
+    const found = await client.find(thread, collectionName, query);
+    const foundAll = await client.find(thread, collectionName, {});
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.length).toBeLessThan(foundAll.length);
+    console.log(`
+    Final Report:
+    ---------------------------
+    Found Length: ${found.length}
+    FoundAll Length: ${foundAll.length}
+    ---------------------------
+    `
+    , foundAll);
+  })
 })

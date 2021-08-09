@@ -83,7 +83,7 @@ export async function setupDB(auth: UserAuth, identity: Identity, names: Names) 
 
   // Create a new Collection from an Object
   const event: Event = {
-    id: '0',
+    eventId: 0,
     eventStreamId: 1,
     createdOn: '2009-01-03'
   }
@@ -105,7 +105,7 @@ const eventsSchema = {
   type: 'object',
   properties: {
     _id: { type: 'string' },
-    eventId: { type: 'string' },
+    eventId: { type: 'number' },
     eventStreamId: { type: 'number' },
     createdOn: { type: 'string' }
   }
