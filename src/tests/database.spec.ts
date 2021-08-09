@@ -4,19 +4,21 @@ import { Client, PrivateKey, ThreadID } from '@textile/hub';
 
 const key = 'b76eqxm5clyev5ns5wlvl3ke7fm';
 const secret = 'bbccrsod3av46mivruobgaljggmgtkx6nzjf4fei';
-const pk = 
+const pk =
 'bbaareqg7fnt2wz26rvl5jeewrhyhlz2qcmsjxyybidrde6w4bqpilvun3x4xvx4au4dwis4fvopoabylawlj6sxu7ai4cdesradsdo7oedbno'
 ;
 
 describe('Accessing the database', () => {
-  jest.setTimeout(10_000);
+  jest.setTimeout(30_000);
 
   let client: Client;
   let thread: ThreadID;
+  let collection: any;
 
   const collectionName = 'Test';
-  const event: Event = {
-    id: 0,
+  const event/* : Event */ = {
+    _id: '0',
+    eventId: "0",
     eventStreamId: 1,
     createdOn: new Date().toString()
   }
@@ -38,12 +40,13 @@ describe('Accessing the database', () => {
   });
 
   it('Can setup a collection and add data', async () => {
-    await collectionFromSchema(client, thread, collectionName);
+    collection = await collectionFromSchema(client, thread, collectionName);
     await create(client, thread, collectionName, event);
   });
 
   it('Can query the new collection', async () => {
-    const data = await createQuery(client, thread, {});
-    expect(data.length).toEqual(1);
+    const data = await create(client, thread, collection, event);
+    console.log(data);
+    // expect(data.length).toEqual(1);
   })
 })
