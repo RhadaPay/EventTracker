@@ -11,7 +11,6 @@ export interface AuthParams {
   secret: string;
 }
 
-
 /******************************
  * SETUP DATABASE CONNECTION
  * @see https://docs.textile.io/threads/#creating-a-new-thread
@@ -106,7 +105,8 @@ const eventsSchema = {
   title: 'Events',
   type: 'object',
   properties: {
-    id: { type: 'string' },
+    _id: { type: 'string' },
+    id: { type: 'number' },
     eventStreamId: { type: 'number' },
     createdOn: { type: 'string' }
   }

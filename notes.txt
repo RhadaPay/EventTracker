@@ -48,3 +48,11 @@ Suggestions for improvement:
     _;
   }
 4) Missing a _modifyPaymentStream method
+\\\
+Setting Up a Job:
+--------------------------------
+=> We want to use wei instead of ether for job applying - check how this works on matic
+=> Send DAIx coin
+=> Jobs returns an array of items not array of objects
+=> job should have a description
+=> In the initial creator assigned, switch the comparison sign

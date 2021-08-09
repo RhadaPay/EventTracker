@@ -9,7 +9,7 @@ const pk =
 ;
 
 describe('Accessing the database', () => {
-  jest.setTimeout(10_000);
+  jest.setTimeout(20_000);
 
   let client: Client;
   let thread: ThreadID;
