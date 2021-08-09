@@ -20,7 +20,7 @@ class EventsRoute implements Routes {
       validationMiddleware(CreateEventDto, 'body'),
       this.eventsController.postEvent
     );
-  }  
+  }
 }
 
 export default EventsRoute;

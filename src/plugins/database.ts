@@ -1,5 +1,16 @@
-import {Client, PrivateKey, UserAuth, Identity, ThreadID, QueryJSON} from '@textile/hub'
-import { Event }  from '@/interfaces/events.interface'
+import { Client, PrivateKey, UserAuth, Identity, ThreadID, QueryJSON, createUserAuth } from '@textile/hub'
+import { Event } from '@/interfaces/events.interface'
+
+export interface Names {
+  db: string;
+  collection: string;
+} 
+
+export interface AuthParams {
+  key: string;
+  secret: string;
+}
+
 
 /******************************
  * SETUP DATABASE CONNECTION
@@ -7,19 +18,22 @@ import { Event }  from '@/interfaces/events.interface'
  ******************************/
 
 /**************************************************************************************************** */
-
 /**
  * To start a new, empty Thread, with remote networking using the Hub APIs,
  * initialize a Thread with the UserAuth object.
  * @param auth API Token object generated from Textile Hub
  * @returns authenticated client instance
  */
-export async function setup (auth: UserAuth) {
+export async function setup(auth: UserAuth) {
   const user = await PrivateKey.fromRandom()
-
   const client = await Client.withUserAuth(auth)
 
   return client
+}
+
+export async function setupClient({ key, secret }: AuthParams) {
+  const auth: UserAuth = await createUserAuth(key, secret);
+  return Client.withUserAuth(auth);
 }
 
 /**
@@ -28,7 +42,7 @@ export async function setup (auth: UserAuth) {
  * @param user private api key
  * @returns authorization token
  */
-export async function newToken (client: Client, user: PrivateKey) {
+export async function newToken(client: Client, user: PrivateKey) {
   const token = await client.getToken(user)
   return token
 }
@@ -38,7 +52,7 @@ export async function newToken (client: Client, user: PrivateKey) {
  * @param client authenticated client instance
  * @returns ThreadID of the db instance
  */
-export async function createDB (client: Client) {
+export async function createDB(client: Client) {
   const thread: ThreadID = await client.newDB()
   return thread
 }
@@ -56,15 +70,18 @@ export async function createDB (client: Client) {
  * @returns the ID of the database
  * @see https://textileio.github.io/js-textile/docs/hub.client
  */
-export async function setupDB(auth: UserAuth, identity: Identity) {
+
+
+
+export async function setupDB(auth: UserAuth, identity: Identity, names: Names) {
   // Initialize the client
   const client = Client.withUserAuth(auth)
 
   // Connect the user to your API
   const userToken = await client.getToken(identity)
-
   // Create a new DB
-  const threadID = await client.newDB(undefined, 'nasa')
+
+  const threadID = await client.newDB(null, names.db)
 
   // Create a new Collection from an Object
   const event: Event = {
@@ -72,10 +89,11 @@ export async function setupDB(auth: UserAuth, identity: Identity) {
     eventStreamId: 1,
     createdOn: '2009-01-03'
   }
-  await client.newCollectionFromObject(threadID, event, { name: 'Events' })
+  const eventWithId = {...event, _id: '' }
 
+  await client.newCollectionFromObject(threadID, eventWithId, { name: names.collection })
   // Store the event object in the new collection
-  await client.create(threadID, 'Events', [event])
+  await client.create(threadID, names.collection, [event])
 
   return threadID
 }
@@ -88,15 +106,15 @@ const eventsSchema = {
   title: 'Events',
   type: 'object',
   properties: {
-    id: {type: 'number'},
-    eventStreamId: {type: 'number'},
-    createdOn: {type: 'string'}
+    id: { type: 'string' },
+    eventStreamId: { type: 'number' },
+    createdOn: { type: 'string' }
   }
 }
 
 // Requires the started database we created above
-export async function collectionFromSchema (client: Client, threadID: ThreadID) {
-  await client.newCollection(threadID, {name: 'Events', schema: eventsSchema})
+export async function collectionFromSchema(client: Client, threadID: ThreadID, name: string = 'Events') {
+  await client.newCollection(threadID, { name, schema: eventsSchema })
 }
 /**
  * Add an Instance
@@ -106,7 +124,7 @@ export async function collectionFromSchema (client: Client, threadID: ThreadID) 
  * @param collection The human-readable name of the model to use.
  * @param event the event to be inserted into the database
  */
-export async function create (client: Client, threadId: ThreadID, collection: string, event: Event) {
+export async function create(client: Client, threadId: ThreadID, collection: string, event: Event) {
   // dont know why the example created a variable here, but will leave for now
   const created = await client.create(threadId, collection, [{
     id: event.id,
@@ -126,7 +144,7 @@ export async function create (client: Client, threadId: ThreadID, collection: st
  * @param query The object that describes the query. User Query class or primitive QueryJSON type.
  * @returns
  */
-export async function createQuery (client: Client, threadID: ThreadID, query: QueryJSON) {
+export async function createQuery(client: Client, threadID: ThreadID, query: QueryJSON) {
   // Get results
   const all = await client.find(threadID, 'Events', query)
   return all

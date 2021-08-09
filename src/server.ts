@@ -1,3 +1,4 @@
+;(global as any).WebSocket = require('isomorphic-ws');
 process.env['NODE_CONFIG_DIR'] = __dirname + '/configs';
 
 import 'dotenv/config';

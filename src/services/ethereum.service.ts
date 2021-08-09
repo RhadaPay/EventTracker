@@ -73,7 +73,7 @@ export class EthereumService {
   }
 
   public async sendStreamAdjustment (job: Job): Promise<void> {
-    return
+    // increaseCashFlowAllowance(jobid, eventsRecorded)
   }
 
 }
