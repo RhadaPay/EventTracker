@@ -124,16 +124,17 @@ export async function collectionFromSchema(client: Client, threadID: ThreadID, n
  * @param collection The human-readable name of the model to use.
  * @param event the event to be inserted into the database
  */
-export async function create(client: Client, threadId: ThreadID, collection: string, event: Event) {
+export async function create(client: Client, threadId: ThreadID, collection: string, event: any) {
   // dont know why the example created a variable here, but will leave for now
   const created = await client.create(threadId, collection, [{
-    eventId: event.id,
+    _id: event._id,
+    eventId: event.eventId,
     eventStreamId: event.eventStreamId,
     createdOn: event.createdOn
   }]);
   return created;
 }
-
+``
 /******************************
  * READ
  ******************************/
