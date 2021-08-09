@@ -4,7 +4,7 @@ import { Event } from '@/interfaces/events.interface'
 export interface Names {
   db: string;
   collection: string;
-} 
+}
 
 export interface AuthParams {
   key: string;
@@ -16,8 +16,8 @@ export interface AuthParams {
  * @see https://docs.textile.io/threads/#creating-a-new-thread
  ******************************/
 
-/**************************************************************************************************** */
 /**
+ *
  * To start a new, empty Thread, with remote networking using the Hub APIs,
  * initialize a Thread with the UserAuth object.
  * @param auth API Token object generated from Textile Hub
@@ -55,7 +55,6 @@ export async function createDB(client: Client) {
   const thread: ThreadID = await client.newDB()
   return thread
 }
-/**************************************************************************************************** */
 
 /**
  * Second option to create a database with a collection
@@ -84,7 +83,7 @@ export async function setupDB(auth: UserAuth, identity: Identity, names: Names) 
 
   // Create a new Collection from an Object
   const event: Event = {
-    id: 0,
+    id: '0',
     eventStreamId: 1,
     createdOn: '2009-01-03'
   }
@@ -106,7 +105,7 @@ const eventsSchema = {
   type: 'object',
   properties: {
     _id: { type: 'string' },
-    id: { type: 'number' },
+    eventId: { type: 'string' },
     eventStreamId: { type: 'number' },
     createdOn: { type: 'string' }
   }
@@ -114,7 +113,8 @@ const eventsSchema = {
 
 // Requires the started database we created above
 export async function collectionFromSchema(client: Client, threadID: ThreadID, name: string = 'Events') {
-  await client.newCollection(threadID, { name, schema: eventsSchema })
+  const collection = await client.newCollection(threadID, { name, schema: eventsSchema })
+  return collection
 }
 /**
  * Add an Instance
@@ -127,10 +127,11 @@ export async function collectionFromSchema(client: Client, threadID: ThreadID, n
 export async function create(client: Client, threadId: ThreadID, collection: string, event: Event) {
   // dont know why the example created a variable here, but will leave for now
   const created = await client.create(threadId, collection, [{
-    id: event.id,
+    eventId: event.id,
     eventStreamId: event.eventStreamId,
     createdOn: event.createdOn
-  }])
+  }]);
+  return created;
 }
 
 /******************************
