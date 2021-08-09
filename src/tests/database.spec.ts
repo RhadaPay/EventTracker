@@ -1,6 +1,7 @@
 import { Event } from '@/interfaces/events.interface';
 import { collectionFromSchema, create, createDB, createQuery, setupClient, setupDB } from '@/plugins/database';
-import { Client, PrivateKey, ThreadID } from '@textile/hub';
+import { Client, PrivateKey, QueryJSON, ThreadID } from '@textile/hub';
+import { Where } from '@textile/threads';
 
 const key = 'b76eqxm5clyev5ns5wlvl3ke7fm';
 const secret = 'bbccrsod3av46mivruobgaljggmgtkx6nzjf4fei';
@@ -45,8 +46,8 @@ describe('Accessing the database', () => {
   });
 
   it('Can query the new collection', async () => {
-    const data = await create(client, thread, collection, event);
-    console.log(data);
-    // expect(data.length).toEqual(1);
-  })
+    const found = await client.find(thread, collectionName, {})
+    console.log('found:', found.length, found)
+    expect(found.length).toEqual(1);
+  });
 })

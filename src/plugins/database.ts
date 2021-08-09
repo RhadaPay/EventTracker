@@ -134,7 +134,7 @@ export async function create(client: Client, threadId: ThreadID, collection: str
   }]);
   return created;
 }
-``
+
 /******************************
  * READ
  ******************************/

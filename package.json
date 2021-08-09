@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@textile/hub": "^6.2.0",
+    "@textile/threads": "^2.2.0",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
