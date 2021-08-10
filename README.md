@@ -25,6 +25,14 @@ This starts the app in development mode, with a bind mount set to everything in 
 Once the app is running, changes to the code will cause a Hot Reload with nodemon, this will make the server unavailable to serve requests for a couple of seconds.
 
 -----------------
+
+### Run the app (outside of docker)
+```
+npm run dev
+```
+This will run the app as a standalone webserver, for development purposes. Please be aware that background tasks require a running redis server. This is started and linked automatically with docker compose, but not with the above command. Run redis on port 6379 - if on windows, you will need to install WSL2 (Ubuntu or Debian seems to both work well), to run redis.
+
+-----------------
 ### Compile solidity files
 The app uses typechain as a development dependency to generate automatic typings for solidity ABIs. You won't need to do this regularly as the contract is not deployed here, but if you need to redeploy typings, you can use the command below to generate fresh typings.
 ```

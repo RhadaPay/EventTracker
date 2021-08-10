@@ -50,9 +50,7 @@ export class EthereumService {
     const events = [] as Event[];
     for (let i = 0; i < nEvents; i++) {
       events.push({
-        eventId: i,
         eventStreamId: (i % 2 === 0) ? 0 : 1,
-        createdOn: new Date().toISOString()
       })
     }
     return events

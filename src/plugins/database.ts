@@ -1,153 +1,129 @@
-import { Client, PrivateKey, UserAuth, Identity, ThreadID, QueryJSON, createUserAuth } from '@textile/hub'
-import { Event } from '@/interfaces/events.interface'
+import { Client, UserAuth, ThreadID, createUserAuth, Where } from '@textile/hub'
+import { DatabaseSeed, SetupDBParams } from '@/interfaces/database.interface'
+import dotenv from 'dotenv';
+import { Event } from '@/interfaces/events.interface';
 
-export interface Names {
-  db: string;
-  collection: string;
-}
-
-export interface AuthParams {
-  key: string;
-  secret: string;
-}
-
+dotenv.config();
 /******************************
  * SETUP DATABASE CONNECTION
  * @see https://docs.textile.io/threads/#creating-a-new-thread
  ******************************/
 
-/**
- *
- * To start a new, empty Thread, with remote networking using the Hub APIs,
- * initialize a Thread with the UserAuth object.
- * @param auth API Token object generated from Textile Hub
- * @returns authenticated client instance
- */
-export async function setup(auth: UserAuth) {
-  const user = await PrivateKey.fromRandom()
-  const client = await Client.withUserAuth(auth)
-
-  return client
-}
-
-export async function setupClient({ key, secret }: AuthParams) {
-  const auth: UserAuth = await createUserAuth(key, secret);
-  return Client.withUserAuth(auth);
-}
-
-/**
- * We must generate a new API token for each user we want on our API.
- * @param client authenticated client instance
- * @param user private api key
- * @returns authorization token
- */
-export async function newToken(client: Client, user: PrivateKey) {
-  const token = await client.getToken(user)
-  return token
-}
-
-/**
- * Create a new database
- * @param client authenticated client instance
- * @returns ThreadID of the db instance
- */
-export async function createDB(client: Client) {
-  const thread: ThreadID = await client.newDB()
-  return thread
-}
-
-/**
- * Second option to create a database with a collection
- *
- * @param auth The user auth object or an async callback that returns a user auth object.
- * @param identity A user identity to use for creating records in the database. A random
- *                 identity can be created with `Client.randomIdentity(), however, it is
- *                 not easy/possible to migrate identities after the fact. Please store or
- *                 otherwise persist any identity information if you wish to retrieve user
- *                 data later, or use an external identity provider.
- * @returns the ID of the database
- * @see https://textileio.github.io/js-textile/docs/hub.client
- */
-
-
-
-export async function setupDB(auth: UserAuth, identity: Identity, names: Names) {
-  // Initialize the client
-  const client = Client.withUserAuth(auth)
-
-  // Connect the user to your API
-  const userToken = await client.getToken(identity)
-  // Create a new DB
-
-  const threadID = await client.newDB(null, names.db)
-
-  // Create a new Collection from an Object
-  const event: Event = {
-    eventId: 0,
+const databaseSeed: DatabaseSeed = {
+  schema: {
+    title: 'Events',
+    type: 'object',
+    properties: {
+      _id: { type: 'string' },
+      eventId: { type: 'number' },
+      eventStreamId: { type: 'number' },
+      createdOn: { type: 'string' }
+    }
+  },
+  sample: {
+    _id: '0',
     eventStreamId: 1,
-    createdOn: '2009-01-03'
   }
-  const eventWithId = {...event, _id: '' }
+};
 
-  await client.newCollectionFromObject(threadID, eventWithId, { name: names.collection })
-  // Store the event object in the new collection
-  await client.create(threadID, names.collection, [event])
+export class Database {
+  constructor(
+    public params: SetupDBParams,
+    public client: Client = undefined,
+    public thread: ThreadID = undefined,
+    public seed: DatabaseSeed = databaseSeed
+  ){};
 
-  return threadID
+  public async setupClient (): Promise<void> {
+    const auth: UserAuth = await createUserAuth(this.params.auth.key, this.params.auth.secret);
+    this.client = Client.withUserAuth(auth);
+  };
+
+  public async connectOrCreateThread(): Promise<void> {
+    const threadName = this.params.names.thread;
+    try {
+      const threadResponse = await this.client.getThread(threadName);
+      console.log(`Existing Thread ${threadName} found`);
+      this.thread = ThreadID.fromString(threadResponse.id);
+    } catch {
+      console.log(`Thread not found for ${threadName}, creating a new instance`);
+      this.thread = await this.client.newDB(undefined, threadName);
+    }
+  };
+
+  public async createCollectionIfNotExists() {
+    const collection = this.params.names.collection;
+    const exists = await this.collectionExists();
+    if (!exists){
+      console.log(`Collection not found for ${collection}, creating a new collection`);
+      await this.createCollection()
+    } else {
+      console.log(`Collection ${collection} found`);
+    }
+  };
+
+  public async collectionExists (): Promise<boolean> {
+    try {
+      const find = await this.client.find(this.thread, this.params.names.collection, {});
+      return Boolean(find);
+    } catch (err) {
+      return false
+    }
+  };
+
+  public async createCollection() {
+    const collectionName = this.params.names.collection;
+    await this.client.newCollection(this.thread, {
+      name: collectionName,
+      schema: this.seed.schema
+    })
+    await this.client.create(this.thread, collectionName, [this.seed.sample]);
+  };
+
+  public async connect() {
+    await this.setupClient();
+    await this.connectOrCreateThread();
+    await this.createCollectionIfNotExists();
+    console.log('Connected!');
+  };
+
+  /**
+   * Queries
+   * 
+   */
+  
+  public async getAllEvents(): Promise<Event[]> {
+    return await this.client.find<Event>(
+      this.thread, 
+      this.params.names.collection,
+      {}
+    );
+  };
+
+  public async getEventsByStream(streamId: number): Promise<Event[]> {
+    return await this.client.find<Event>(
+      this.thread, 
+      this.params.names.collection,
+      new Where('eventStreamId').eq(streamId)
+    );
+  };
+
+  public async createNewEvent(event: Event): Promise<void> {
+    await this.client.create(
+      this.thread,
+      this.params.names.collection,
+      [event]
+    );
+  };
 }
 
-
-/******************************
- * CREATE
- ******************************/
-const eventsSchema = {
-  title: 'Events',
-  type: 'object',
-  properties: {
-    _id: { type: 'string' },
-    eventId: { type: 'number' },
-    eventStreamId: { type: 'number' },
-    createdOn: { type: 'string' }
+export default new Database({
+  auth: {
+    key: process.env.TEXTILE_KEY,
+    secret: process.env.TEXTILE_SECRET
+  },
+  names: {
+    thread: 'RhadaThreadDB',
+    collection: 'Events'
   }
-}
-
-// Requires the started database we created above
-export async function collectionFromSchema(client: Client, threadID: ThreadID, name: string = 'Events') {
-  const collection = await client.newCollection(threadID, { name, schema: eventsSchema })
-  return collection
-}
-/**
- * Add an Instance
- *
- * @param client authenticated client
- * @param threadId the ID of the database
- * @param collection The human-readable name of the model to use.
- * @param event the event to be inserted into the database
- */
-export async function create(client: Client, threadId: ThreadID, collection: string, event: any) {
-  // dont know why the example created a variable here, but will leave for now
-  const created = await client.create(threadId, collection, [{
-    _id: event._id,
-    eventId: event.eventId,
-    eventStreamId: event.eventStreamId,
-    createdOn: event.createdOn
-  }]);
-  return created;
-}
-
-/******************************
- * READ
- ******************************/
-/**
- * Requires the started database we generated above containing the Player collection
- *
- * @param client authenticated client
- * @param threadID the ID of the database
- * @param query The object that describes the query. User Query class or primitive QueryJSON type.
- * @returns
- */
-export async function createQuery(client: Client, threadID: ThreadID, query: QueryJSON) {
-  // Get results
-  const all = await client.find(threadID, 'Events', query)
-  return all
-}
+});
