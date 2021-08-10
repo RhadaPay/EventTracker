@@ -12,13 +12,10 @@ export class EventService {
 
   public async createEvent(data: CreateEventDto): Promise<Event> {
     emptyValidation(data);
-    const newEvent = {
-      id: this.events.length + 1,
-      createdOn: new Date().toDateString(),
-      ...data
+    const newEvent: Event = {
+      eventId: this.events.length + 1,
+      eventStreamId: data.eventStreamId
     };
-    this.events = [...this.events, newEvent];
     return newEvent
   }
-  
 }
