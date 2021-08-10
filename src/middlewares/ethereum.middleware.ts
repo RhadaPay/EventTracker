@@ -1,4 +1,4 @@
-import { EthRequest } from "@/interfaces/ethereum.interface";
+import { EthRequest } from "@/interfaces/request.interface";
 import { RhadaPay } from "@/interfaces/typechain";
 import { RequestHandler } from "express";
 

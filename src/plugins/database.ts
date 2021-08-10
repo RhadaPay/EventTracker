@@ -108,22 +108,27 @@ export class Database {
     );
   };
 
-  public async createNewEvent(event: Event): Promise<void> {
-    await this.client.create(
+  public async createNewEvent(event: Event): Promise<string> {
+    const _id = await this.client.create(
       this.thread,
       this.params.names.collection,
       [event]
     );
+    return _id[0];
   };
 }
 
-export default new Database({
-  auth: {
-    key: process.env.TEXTILE_KEY,
-    secret: process.env.TEXTILE_SECRET
-  },
-  names: {
-    thread: 'RhadaThreadDB',
-    collection: 'Events'
-  }
-});
+export const connectDB = async (): Promise<Database> => { 
+  const db = new Database({
+    auth: {
+      key: process.env.TEXTILE_KEY,
+      secret: process.env.TEXTILE_SECRET
+    },
+      names: {
+      thread: 'EventDB',
+      collection: 'Events'
+    }
+  })
+  await db.connect();
+  return db
+};

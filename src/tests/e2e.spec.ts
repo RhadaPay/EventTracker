@@ -13,14 +13,14 @@ describe('E2E tests', () => {
     await contract.createEventStream('App Downloads');
   })
 
-  it('Can create a job', async () => {
-    const job: Partial<Job> = {
-      amount: BigNumber.from(1000),
-      refreshRate: BigNumber.from(5),
-      eventStreamId: BigNumber.from(0)
-    };
-    await contract.createJob(job.amount, job.refreshRate, job.eventStreamId);
-  })
+  // it('Can create a job', async () => {
+  //   const job: Partial<Job> = {
+  //     amount: BigNumber.from(1000),
+  //     refreshRate: BigNumber.from(5),
+  //     eventStreamId: BigNumber.from(0)
+  //   };
+  //   await contract.createJob(job.amount, job.refreshRate, job.eventStreamId);
+  // })
 
   it('Can get event Streams', async () => {
     const eventStreams = await contract.getEventStreams();

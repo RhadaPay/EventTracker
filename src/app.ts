@@ -16,6 +16,8 @@ import errorMiddleware from '@middlewares/error.middleware';
 import ethereumMiddleware from '@/middlewares/ethereum.middleware';
 import { logger, stream } from '@utils/logger';
 import { contract } from './plugins/ethereum';
+import { Database, connectDB } from '@/plugins/database';
+import databaseMiddleware from './middlewares/database.middleware';
 
 dotenv.config();
 
@@ -23,17 +25,15 @@ class App {
   public app: express.Application;
   public port: string | number;
   public env: string;
+  public db: Database;
+  private routes: Routes[];
 
   constructor(routes: Routes[]) {
     this.app = express();
     this.port = process.env.PORT || 3000;
     this.env = process.env.NODE_ENV || 'development';
-
-    this.initializeMiddlewares();
-    this.attachContractToEthRoutes();
-    this.initializeRoutes(routes);
-    this.initializeSwagger();
-    this.initializeErrorHandling();
+    this.routes = routes;
+    this.initializeAppliction();
   }
 
   public listen() {
@@ -42,6 +42,18 @@ class App {
       logger.info(`======= ENV: ${this.env} =======`);
       logger.info(`🚀 App listening on port ${this.port}`);
       logger.info(`=================================`);
+    });
+  }
+
+  public initializeAppliction() {
+    const self = this;
+    connectDB().then(db => {
+      self.initializeMiddlewares();
+      self.attachContractToEthRoutes();
+      self.initializeDbMiddleware(db);
+      self.initializeRoutes(this.routes);
+      self.initializeSwagger();
+      self.initializeErrorHandling();
     });
   }
 
@@ -84,6 +96,11 @@ class App {
 
   private initializeErrorHandling() {
     this.app.use(errorMiddleware);
+  }
+
+  private initializeDbMiddleware(db: Database) {
+    console.log('Connected at', db.thread.toString());
+    this.app.use(databaseMiddleware(db))
   }
 
   private attachContractToEthRoutes() {

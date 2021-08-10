@@ -25,3 +25,5 @@ export const isEmpty = (value: requestDataType): boolean => {
 export const emptyValidation = (data: requestDataType) => {
   if (isEmpty(data)) throw new HttpException(400, "Passed data was empty");
 }
+
+export const delay = (ms: number=1000) => new Promise<void>((resolve) => setTimeout(() => resolve(), ms))

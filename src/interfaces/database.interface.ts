@@ -1,4 +1,3 @@
-import { Identity } from "@textile/hub";
 import { Event } from "./events.interface";
 
 export interface Names {
