@@ -1,6 +1,10 @@
 version: '3.7'
 
 services:
+  redis:
+    image: redis:4.0
+    networks:
+      - backend
   proxy:
     image: nginx:alpine
     container_name: proxy
@@ -17,6 +21,10 @@ services:
       target: development-build-stage
       dockerfile: Dockerfile
     container_name: server
+    links:
+      - redis
+    depends_on:
+      - redis      
     ports:
       - '3000:3000'
     volumes:

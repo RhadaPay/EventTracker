@@ -4,8 +4,7 @@ import { RequestHandler } from "express";
 
 const databaseMiddleware = (
   /*
-    Make ethereum contract available in the route
-    Might not need this
+    Make db available in the route
   */
   db: Database,
 ): RequestHandler => (req: DBRequest, res, next) => {

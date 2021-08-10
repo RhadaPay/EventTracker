@@ -18,6 +18,7 @@
     "@textile/hub": "^6.2.0",
     "@textile/threads": "^2.2.0",
     "bcrypt": "^5.0.1",
+    "bull": "^3.28.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "compression": "^1.7.4",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@typechain/ethers-v5": "^7.0.1",
     "@types/bcrypt": "^5.0.0",
+    "@types/bull": "^3.15.3",
     "@types/compression": "^1.7.1",
     "@types/config": "^0.0.39",
     "@types/cookie-parser": "^1.4.2",

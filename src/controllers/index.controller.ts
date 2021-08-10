@@ -1,3 +1,4 @@
+import { addToQueue } from '@/plugins/queue';
 import { NextFunction, Request, Response } from 'express';
 
 class IndexController {
@@ -8,6 +9,16 @@ class IndexController {
       next(error);
     }
   };
+
+  public schedule = (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      console.log('Schedule');
+      addToQueue(req.body);
+      res.sendStatus(200);
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default IndexController;
