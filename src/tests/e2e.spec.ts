@@ -9,18 +9,24 @@ const service = new EthereumService(contract);
 describe('E2E tests', () => {
   jest.setTimeout(30_000);
 
-  it('Can setup an event stream', async () => {
-    await contract.createEventStream('App Downloads');
-  })
-
-  // it('Can create a job', async () => {
-  //   const job: Partial<Job> = {
-  //     amount: BigNumber.from(1000),
-  //     refreshRate: BigNumber.from(5),
-  //     eventStreamId: BigNumber.from(0)
-  //   };
-  //   await contract.createJob(job.amount, job.refreshRate, job.eventStreamId);
+  // it('Can setup an event stream', async () => {
+  //   await contract.createEventStream('App Downloads');
   // })
+
+  it('Can create a job', async () => {
+    const job: Partial<Job> = {
+      amount: BigNumber.from(3000),
+      refreshRate: BigNumber.from(2000),
+      eventStreamId: BigNumber.from(1),
+      percentage: 10
+    };
+    await contract.createJob(
+      job.amount,
+      job.refreshRate,
+      job.eventStreamId,
+      job.percentage
+    );
+  })
 
   it('Can get event Streams', async () => {
     const eventStreams = await contract.getEventStreams();
@@ -35,7 +41,7 @@ describe('E2E tests', () => {
   });
 
   it('Can get a job', async () => {
-    const job = await service.getOneJob(3);
+    const job = await service.getOneJob(0);
     console.log(job);
   });
 })

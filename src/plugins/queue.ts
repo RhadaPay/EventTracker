@@ -1,4 +1,4 @@
-import Bull, { DoneCallback, Job } from 'bull';
+import Bull from 'bull';
 
 const queue = new Bull(
   'queue', {
@@ -8,28 +8,9 @@ const queue = new Bull(
     } 
   }
 );
-const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
-const processQueue = async (job: Job, done: DoneCallback) => {
-  const index = Math.floor(Math.random() * 100);
-  console.log('processing data', {
-    time: new Date().getUTCSeconds(),
-    index
-  });
-  await delay(3000);
-  console.log('Processed!', index);
-  done();
-};
+queue.process((job) => {
+  console.log('Added Job to Queue at', job.timestamp);
+})
 
-try {
-  queue.process(processQueue);
-} catch (err) {
-  console.warn('Process failed to execute, err: ', err);
-}
-
-const addToQueue = <T>(data: T) => {
-  console.log(`Queued data:`, data);
-  queue.add(data);
-};
-
-export { addToQueue };
+export { queue };

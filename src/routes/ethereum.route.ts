@@ -13,7 +13,8 @@ class EthereumRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}/status`, this.ethereumController.getStatus);
-  }  
+    // use the POST events route to see implementation of ingestEvent
+  } 
 }
 
 export default EthereumRoute;

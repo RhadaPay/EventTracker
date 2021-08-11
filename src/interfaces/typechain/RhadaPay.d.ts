@@ -22,27 +22,53 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface RhadaPayInterface extends ethers.utils.Interface {
   functions: {
+    "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "JOB_ADMIN()": FunctionFragment;
+    "JOB_ORACLE()": FunctionFragment;
     "applyForJob(uint256)": FunctionFragment;
+    "cashflowFactory()": FunctionFragment;
     "changeRefreshRate(uint8,uint256)": FunctionFragment;
     "chooseApplicant(address,uint256)": FunctionFragment;
     "configureAmount(uint256,uint256)": FunctionFragment;
     "createEventStream(string)": FunctionFragment;
-    "createJob(uint256,uint256,uint256)": FunctionFragment;
+    "createJob(uint256,uint256,uint256,uint8)": FunctionFragment;
     "eventStreams(uint256)": FunctionFragment;
     "finalApplicant(uint256)": FunctionFragment;
-    "finalSign(bool,uint256)": FunctionFragment;
+    "finalSign(bool,uint256,int96,int96,uint256)": FunctionFragment;
     "getEventStreams()": FunctionFragment;
     "getJobs()": FunctionFragment;
+    "getRoleAdmin(bytes32)": FunctionFragment;
+    "getRoleMember(bytes32,uint256)": FunctionFragment;
+    "getRoleMemberCount(bytes32)": FunctionFragment;
+    "grantRole(bytes32,address)": FunctionFragment;
+    "hasRole(bytes32,address)": FunctionFragment;
+    "increaseCashflowAllowance(uint256,uint256)": FunctionFragment;
     "initApplicantSign(uint256)": FunctionFragment;
     "initCreatorSign(uint256)": FunctionFragment;
     "jobToApplicants(uint256,uint256)": FunctionFragment;
     "jobs(uint256)": FunctionFragment;
-    "submitWork(uint256)": FunctionFragment;
+    "renounceRole(bytes32,address)": FunctionFragment;
+    "revokeRole(bytes32,address)": FunctionFragment;
+    "submitWork(uint256,string)": FunctionFragment;
+    "updateCashflowFactoryAddress(address)": FunctionFragment;
   };
 
   encodeFunctionData(
+    functionFragment: "DEFAULT_ADMIN_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "JOB_ADMIN", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "JOB_ORACLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "applyForJob",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "cashflowFactory",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "changeRefreshRate",
@@ -62,7 +88,7 @@ interface RhadaPayInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createJob",
-    values: [BigNumberish, BigNumberish, BigNumberish]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "eventStreams",
@@ -74,13 +100,37 @@ interface RhadaPayInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "finalSign",
-    values: [boolean, BigNumberish]
+    values: [boolean, BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getEventStreams",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "getJobs", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "getRoleAdmin",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMember",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMemberCount",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "grantRole",
+    values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasRole",
+    values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "increaseCashflowAllowance",
+    values: [BigNumberish, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "initApplicantSign",
     values: [BigNumberish]
@@ -95,12 +145,34 @@ interface RhadaPayInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "jobs", values: [BigNumberish]): string;
   encodeFunctionData(
+    functionFragment: "renounceRole",
+    values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "revokeRole",
+    values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "submitWork",
-    values: [BigNumberish]
+    values: [BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateCashflowFactoryAddress",
+    values: [string]
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "DEFAULT_ADMIN_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "JOB_ADMIN", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "JOB_ORACLE", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "applyForJob",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "cashflowFactory",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -135,6 +207,24 @@ interface RhadaPayInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getJobs", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getRoleAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMember",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMemberCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "increaseCashflowAllowance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "initApplicantSign",
     data: BytesLike
   ): Result;
@@ -147,7 +237,16 @@ interface RhadaPayInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "jobs", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceRole",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "submitWork", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "updateCashflowFactoryAddress",
+    data: BytesLike
+  ): Result;
 
   events: {
     "AmountChanged(uint256,uint256)": EventFragment;
@@ -160,6 +259,9 @@ interface RhadaPayInterface extends ethers.utils.Interface {
     "FinalSign(address,address,uint256)": EventFragment;
     "JobCompleted(uint256)": EventFragment;
     "JobCreated(address,uint256,uint256,uint256,uint256)": EventFragment;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
+    "RoleGranted(bytes32,address,address)": EventFragment;
+    "RoleRevoked(bytes32,address,address)": EventFragment;
     "UpdateNumberOfEvents(uint256,uint256)": EventFragment;
   };
 
@@ -173,6 +275,9 @@ interface RhadaPayInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "FinalSign"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "JobCompleted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "JobCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateNumberOfEvents"): EventFragment;
 }
 
@@ -220,10 +325,18 @@ export class RhadaPay extends BaseContract {
   interface: RhadaPayInterface;
 
   functions: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
+    JOB_ADMIN(overrides?: CallOverrides): Promise<[string]>;
+
+    JOB_ORACLE(overrides?: CallOverrides): Promise<[string]>;
+
     applyForJob(
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    cashflowFactory(overrides?: CallOverrides): Promise<[string]>;
 
     changeRefreshRate(
       newRefreshRate: BigNumberish,
@@ -252,6 +365,7 @@ export class RhadaPay extends BaseContract {
       _initAmount: BigNumberish,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _percentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -268,6 +382,9 @@ export class RhadaPay extends BaseContract {
     finalSign(
       result: boolean,
       jobID: BigNumberish,
+      allowedFlow: BigNumberish,
+      maxAllowedFlow: BigNumberish,
+      deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -285,6 +402,8 @@ export class RhadaPay extends BaseContract {
           string,
           BigNumber,
           BigNumber,
+          number,
+          string,
           BigNumber,
           BigNumber,
           boolean,
@@ -295,6 +414,8 @@ export class RhadaPay extends BaseContract {
           creator: string;
           amount: BigNumber;
           refreshRate: BigNumber;
+          percentage: number;
+          assetCid: string;
           eventStreamId: BigNumber;
           eventsRecorded: BigNumber;
           creatorSigned: boolean;
@@ -304,6 +425,37 @@ export class RhadaPay extends BaseContract {
         })[]
       ]
     >;
+
+    getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    increaseCashflowAllowance(
+      jobId: BigNumberish,
+      eventsRecorded: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -329,6 +481,8 @@ export class RhadaPay extends BaseContract {
         string,
         BigNumber,
         BigNumber,
+        number,
+        string,
         BigNumber,
         BigNumber,
         boolean,
@@ -339,6 +493,8 @@ export class RhadaPay extends BaseContract {
         creator: string;
         amount: BigNumber;
         refreshRate: BigNumber;
+        percentage: number;
+        assetCid: string;
         eventStreamId: BigNumber;
         eventsRecorded: BigNumber;
         creatorSigned: boolean;
@@ -348,16 +504,42 @@ export class RhadaPay extends BaseContract {
       }
     >;
 
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     submitWork(
       jobID: BigNumberish,
+      assetCid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    updateCashflowFactoryAddress(
+      _cashflowFactory: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  JOB_ADMIN(overrides?: CallOverrides): Promise<string>;
+
+  JOB_ORACLE(overrides?: CallOverrides): Promise<string>;
 
   applyForJob(
     jobID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  cashflowFactory(overrides?: CallOverrides): Promise<string>;
 
   changeRefreshRate(
     newRefreshRate: BigNumberish,
@@ -386,6 +568,7 @@ export class RhadaPay extends BaseContract {
     _initAmount: BigNumberish,
     _refreshRate: BigNumberish,
     _eventStreamId: BigNumberish,
+    _percentage: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -399,6 +582,9 @@ export class RhadaPay extends BaseContract {
   finalSign(
     result: boolean,
     jobID: BigNumberish,
+    allowedFlow: BigNumberish,
+    maxAllowedFlow: BigNumberish,
+    deadline: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -413,6 +599,8 @@ export class RhadaPay extends BaseContract {
       string,
       BigNumber,
       BigNumber,
+      number,
+      string,
       BigNumber,
       BigNumber,
       boolean,
@@ -423,6 +611,8 @@ export class RhadaPay extends BaseContract {
       creator: string;
       amount: BigNumber;
       refreshRate: BigNumber;
+      percentage: number;
+      assetCid: string;
       eventStreamId: BigNumber;
       eventsRecorded: BigNumber;
       creatorSigned: boolean;
@@ -431,6 +621,37 @@ export class RhadaPay extends BaseContract {
       state: number;
     })[]
   >;
+
+  getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+  getRoleMember(
+    role: BytesLike,
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getRoleMemberCount(
+    role: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  grantRole(
+    role: BytesLike,
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  hasRole(
+    role: BytesLike,
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  increaseCashflowAllowance(
+    jobId: BigNumberish,
+    eventsRecorded: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   initApplicantSign(
     jobID: BigNumberish,
@@ -456,6 +677,8 @@ export class RhadaPay extends BaseContract {
       string,
       BigNumber,
       BigNumber,
+      number,
+      string,
       BigNumber,
       BigNumber,
       boolean,
@@ -466,6 +689,8 @@ export class RhadaPay extends BaseContract {
       creator: string;
       amount: BigNumber;
       refreshRate: BigNumber;
+      percentage: number;
+      assetCid: string;
       eventStreamId: BigNumber;
       eventsRecorded: BigNumber;
       creatorSigned: boolean;
@@ -475,13 +700,39 @@ export class RhadaPay extends BaseContract {
     }
   >;
 
+  renounceRole(
+    role: BytesLike,
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  revokeRole(
+    role: BytesLike,
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   submitWork(
     jobID: BigNumberish,
+    assetCid: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  updateCashflowFactoryAddress(
+    _cashflowFactory: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    JOB_ADMIN(overrides?: CallOverrides): Promise<string>;
+
+    JOB_ORACLE(overrides?: CallOverrides): Promise<string>;
+
     applyForJob(jobID: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    cashflowFactory(overrides?: CallOverrides): Promise<string>;
 
     changeRefreshRate(
       newRefreshRate: BigNumberish,
@@ -510,6 +761,7 @@ export class RhadaPay extends BaseContract {
       _initAmount: BigNumberish,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _percentage: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -526,6 +778,9 @@ export class RhadaPay extends BaseContract {
     finalSign(
       result: boolean,
       jobID: BigNumberish,
+      allowedFlow: BigNumberish,
+      maxAllowedFlow: BigNumberish,
+      deadline: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -540,6 +795,8 @@ export class RhadaPay extends BaseContract {
         string,
         BigNumber,
         BigNumber,
+        number,
+        string,
         BigNumber,
         BigNumber,
         boolean,
@@ -550,6 +807,8 @@ export class RhadaPay extends BaseContract {
         creator: string;
         amount: BigNumber;
         refreshRate: BigNumber;
+        percentage: number;
+        assetCid: string;
         eventStreamId: BigNumber;
         eventsRecorded: BigNumber;
         creatorSigned: boolean;
@@ -558,6 +817,37 @@ export class RhadaPay extends BaseContract {
         state: number;
       })[]
     >;
+
+    getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    increaseCashflowAllowance(
+      jobId: BigNumberish,
+      eventsRecorded: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -583,6 +873,8 @@ export class RhadaPay extends BaseContract {
         string,
         BigNumber,
         BigNumber,
+        number,
+        string,
         BigNumber,
         BigNumber,
         boolean,
@@ -593,6 +885,8 @@ export class RhadaPay extends BaseContract {
         creator: string;
         amount: BigNumber;
         refreshRate: BigNumber;
+        percentage: number;
+        assetCid: string;
         eventStreamId: BigNumber;
         eventsRecorded: BigNumber;
         creatorSigned: boolean;
@@ -602,7 +896,28 @@ export class RhadaPay extends BaseContract {
       }
     >;
 
-    submitWork(jobID: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    submitWork(
+      jobID: BigNumberish,
+      assetCid: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateCashflowFactoryAddress(
+      _cashflowFactory: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -694,6 +1009,33 @@ export class RhadaPay extends BaseContract {
       }
     >;
 
+    RoleAdminChanged(
+      role?: BytesLike | null,
+      previousAdminRole?: BytesLike | null,
+      newAdminRole?: BytesLike | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; previousAdminRole: string; newAdminRole: string }
+    >;
+
+    RoleGranted(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; account: string; sender: string }
+    >;
+
+    RoleRevoked(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { role: string; account: string; sender: string }
+    >;
+
     UpdateNumberOfEvents(
       newTotal?: null,
       jobID?: null
@@ -704,10 +1046,18 @@ export class RhadaPay extends BaseContract {
   };
 
   estimateGas: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    JOB_ADMIN(overrides?: CallOverrides): Promise<BigNumber>;
+
+    JOB_ORACLE(overrides?: CallOverrides): Promise<BigNumber>;
+
     applyForJob(
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    cashflowFactory(overrides?: CallOverrides): Promise<BigNumber>;
 
     changeRefreshRate(
       newRefreshRate: BigNumberish,
@@ -736,6 +1086,7 @@ export class RhadaPay extends BaseContract {
       _initAmount: BigNumberish,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _percentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -752,12 +1103,49 @@ export class RhadaPay extends BaseContract {
     finalSign(
       result: boolean,
       jobID: BigNumberish,
+      allowedFlow: BigNumberish,
+      maxAllowedFlow: BigNumberish,
+      deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getEventStreams(overrides?: CallOverrides): Promise<BigNumber>;
 
     getJobs(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getRoleAdmin(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    increaseCashflowAllowance(
+      jobId: BigNumberish,
+      eventsRecorded: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -777,17 +1165,45 @@ export class RhadaPay extends BaseContract {
 
     jobs(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     submitWork(
       jobID: BigNumberish,
+      assetCid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    updateCashflowFactoryAddress(
+      _cashflowFactory: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    DEFAULT_ADMIN_ROLE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    JOB_ADMIN(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    JOB_ORACLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     applyForJob(
       jobID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    cashflowFactory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     changeRefreshRate(
       newRefreshRate: BigNumberish,
@@ -816,6 +1232,7 @@ export class RhadaPay extends BaseContract {
       _initAmount: BigNumberish,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _percentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -832,12 +1249,49 @@ export class RhadaPay extends BaseContract {
     finalSign(
       result: boolean,
       jobID: BigNumberish,
+      allowedFlow: BigNumberish,
+      maxAllowedFlow: BigNumberish,
+      deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getEventStreams(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getJobs(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getRoleAdmin(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    increaseCashflowAllowance(
+      jobId: BigNumberish,
+      eventsRecorded: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     initApplicantSign(
       jobID: BigNumberish,
@@ -860,8 +1314,26 @@ export class RhadaPay extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     submitWork(
       jobID: BigNumberish,
+      assetCid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateCashflowFactoryAddress(
+      _cashflowFactory: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

@@ -1,10 +1,14 @@
 import { Event } from "@/interfaces/events.interface";
 import { DBRequest } from "@/interfaces/request.interface";
+import { contract } from "@/plugins/ethereum";
+import { queue } from "@/plugins/queue";
+import { EthereumService } from "@/services/ethereum.service";
 import { EventService } from "@/services/event.service";
 import { NextFunction, Request, Response } from "express";
 
 class EventsController {
   public eventService = new EventService();
+  public ethService = new EthereumService(contract);
 
   public getEvents = async (req: DBRequest, res: Response, next: NextFunction) => {
     try {
@@ -30,8 +34,9 @@ class EventsController {
 
   public postEvent = async (req: DBRequest, res: Response, next: NextFunction) => {
     try {
-      const { db } = req;
-      const data = await this.eventService.createEvent(db, req.body);
+      const { db, body } = req;
+      const data = await this.eventService.createEvent(db, body);
+      await queue.add(this.ethService.ingestEvent(db, body));
       res.status(201).json({ data, message: 'created' });
     } catch (error){
       next(error)

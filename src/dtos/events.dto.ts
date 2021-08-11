@@ -1,6 +1,7 @@
-import { IsPositive } from "class-validator";
+import { IsNumber, Min } from "class-validator";
 
 export class CreateEventDto {
-  @IsPositive()
+  @IsNumber()
+  @Min(0)
   public eventStreamId: number;
 }
