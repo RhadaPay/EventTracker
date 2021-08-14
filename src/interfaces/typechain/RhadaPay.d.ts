@@ -31,10 +31,10 @@ interface RhadaPayInterface extends ethers.utils.Interface {
     "chooseApplicant(address,uint256)": FunctionFragment;
     "configureAmount(uint256,uint256)": FunctionFragment;
     "createEventStream(string)": FunctionFragment;
-    "createJob(uint256,uint256,uint256,uint8)": FunctionFragment;
+    "createJob(uint256,string,uint256,uint256,uint256,uint8)": FunctionFragment;
     "eventStreams(uint256)": FunctionFragment;
     "finalApplicant(uint256)": FunctionFragment;
-    "finalSign(bool,uint256,int96,int96,uint256)": FunctionFragment;
+    "finalSign(bool,uint256,int96,int96)": FunctionFragment;
     "getEventStreams()": FunctionFragment;
     "getJobs()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
@@ -88,7 +88,14 @@ interface RhadaPayInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createJob",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
+    values: [
+      BigNumberish,
+      string,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "eventStreams",
@@ -100,7 +107,7 @@ interface RhadaPayInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "finalSign",
-    values: [boolean, BigNumberish, BigNumberish, BigNumberish, BigNumberish]
+    values: [boolean, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getEventStreams",
@@ -363,8 +370,10 @@ export class RhadaPay extends BaseContract {
 
     createJob(
       _initAmount: BigNumberish,
+      _descriptor: string,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _deadline: BigNumberish,
       _percentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -384,7 +393,6 @@ export class RhadaPay extends BaseContract {
       jobID: BigNumberish,
       allowedFlow: BigNumberish,
       maxAllowedFlow: BigNumberish,
-      deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -400,10 +408,12 @@ export class RhadaPay extends BaseContract {
       [
         ([
           string,
+          string,
           BigNumber,
           BigNumber,
           number,
           string,
+          BigNumber,
           BigNumber,
           BigNumber,
           boolean,
@@ -412,12 +422,14 @@ export class RhadaPay extends BaseContract {
           number
         ] & {
           creator: string;
+          descriptor: string;
           amount: BigNumber;
           refreshRate: BigNumber;
           percentage: number;
           assetCid: string;
           eventStreamId: BigNumber;
           eventsRecorded: BigNumber;
+          deadline: BigNumber;
           creatorSigned: boolean;
           applicantSigned: boolean;
           workSubmitted: boolean;
@@ -479,10 +491,12 @@ export class RhadaPay extends BaseContract {
     ): Promise<
       [
         string,
+        string,
         BigNumber,
         BigNumber,
         number,
         string,
+        BigNumber,
         BigNumber,
         BigNumber,
         boolean,
@@ -491,12 +505,14 @@ export class RhadaPay extends BaseContract {
         number
       ] & {
         creator: string;
+        descriptor: string;
         amount: BigNumber;
         refreshRate: BigNumber;
         percentage: number;
         assetCid: string;
         eventStreamId: BigNumber;
         eventsRecorded: BigNumber;
+        deadline: BigNumber;
         creatorSigned: boolean;
         applicantSigned: boolean;
         workSubmitted: boolean;
@@ -566,8 +582,10 @@ export class RhadaPay extends BaseContract {
 
   createJob(
     _initAmount: BigNumberish,
+    _descriptor: string,
     _refreshRate: BigNumberish,
     _eventStreamId: BigNumberish,
+    _deadline: BigNumberish,
     _percentage: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -584,7 +602,6 @@ export class RhadaPay extends BaseContract {
     jobID: BigNumberish,
     allowedFlow: BigNumberish,
     maxAllowedFlow: BigNumberish,
-    deadline: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -597,10 +614,12 @@ export class RhadaPay extends BaseContract {
   ): Promise<
     ([
       string,
+      string,
       BigNumber,
       BigNumber,
       number,
       string,
+      BigNumber,
       BigNumber,
       BigNumber,
       boolean,
@@ -609,12 +628,14 @@ export class RhadaPay extends BaseContract {
       number
     ] & {
       creator: string;
+      descriptor: string;
       amount: BigNumber;
       refreshRate: BigNumber;
       percentage: number;
       assetCid: string;
       eventStreamId: BigNumber;
       eventsRecorded: BigNumber;
+      deadline: BigNumber;
       creatorSigned: boolean;
       applicantSigned: boolean;
       workSubmitted: boolean;
@@ -675,10 +696,12 @@ export class RhadaPay extends BaseContract {
   ): Promise<
     [
       string,
+      string,
       BigNumber,
       BigNumber,
       number,
       string,
+      BigNumber,
       BigNumber,
       BigNumber,
       boolean,
@@ -687,12 +710,14 @@ export class RhadaPay extends BaseContract {
       number
     ] & {
       creator: string;
+      descriptor: string;
       amount: BigNumber;
       refreshRate: BigNumber;
       percentage: number;
       assetCid: string;
       eventStreamId: BigNumber;
       eventsRecorded: BigNumber;
+      deadline: BigNumber;
       creatorSigned: boolean;
       applicantSigned: boolean;
       workSubmitted: boolean;
@@ -759,8 +784,10 @@ export class RhadaPay extends BaseContract {
 
     createJob(
       _initAmount: BigNumberish,
+      _descriptor: string,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _deadline: BigNumberish,
       _percentage: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -780,7 +807,6 @@ export class RhadaPay extends BaseContract {
       jobID: BigNumberish,
       allowedFlow: BigNumberish,
       maxAllowedFlow: BigNumberish,
-      deadline: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -793,10 +819,12 @@ export class RhadaPay extends BaseContract {
     ): Promise<
       ([
         string,
+        string,
         BigNumber,
         BigNumber,
         number,
         string,
+        BigNumber,
         BigNumber,
         BigNumber,
         boolean,
@@ -805,12 +833,14 @@ export class RhadaPay extends BaseContract {
         number
       ] & {
         creator: string;
+        descriptor: string;
         amount: BigNumber;
         refreshRate: BigNumber;
         percentage: number;
         assetCid: string;
         eventStreamId: BigNumber;
         eventsRecorded: BigNumber;
+        deadline: BigNumber;
         creatorSigned: boolean;
         applicantSigned: boolean;
         workSubmitted: boolean;
@@ -871,10 +901,12 @@ export class RhadaPay extends BaseContract {
     ): Promise<
       [
         string,
+        string,
         BigNumber,
         BigNumber,
         number,
         string,
+        BigNumber,
         BigNumber,
         BigNumber,
         boolean,
@@ -883,12 +915,14 @@ export class RhadaPay extends BaseContract {
         number
       ] & {
         creator: string;
+        descriptor: string;
         amount: BigNumber;
         refreshRate: BigNumber;
         percentage: number;
         assetCid: string;
         eventStreamId: BigNumber;
         eventsRecorded: BigNumber;
+        deadline: BigNumber;
         creatorSigned: boolean;
         applicantSigned: boolean;
         workSubmitted: boolean;
@@ -1084,8 +1118,10 @@ export class RhadaPay extends BaseContract {
 
     createJob(
       _initAmount: BigNumberish,
+      _descriptor: string,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _deadline: BigNumberish,
       _percentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1105,7 +1141,6 @@ export class RhadaPay extends BaseContract {
       jobID: BigNumberish,
       allowedFlow: BigNumberish,
       maxAllowedFlow: BigNumberish,
-      deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1230,8 +1265,10 @@ export class RhadaPay extends BaseContract {
 
     createJob(
       _initAmount: BigNumberish,
+      _descriptor: string,
       _refreshRate: BigNumberish,
       _eventStreamId: BigNumberish,
+      _deadline: BigNumberish,
       _percentage: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1251,7 +1288,6 @@ export class RhadaPay extends BaseContract {
       jobID: BigNumberish,
       allowedFlow: BigNumberish,
       maxAllowedFlow: BigNumberish,
-      deadline: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

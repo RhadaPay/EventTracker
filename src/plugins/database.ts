@@ -87,6 +87,14 @@ export class Database {
     console.log('Connected!');
   };
 
+  public async testConnection() {
+    try {
+      await this.getAllEvents();
+    } catch (err) {
+      console.log('Disconnected', err);
+      await this.connect()
+    }
+  }
   /**
    * Queries
    * 
@@ -102,7 +110,7 @@ export class Database {
 
   public async getEventsByStream(streamId: number): Promise<Event[]> {
     return await this.client.find<Event>(
-      this.thread, 
+      this.thread,
       this.params.names.collection,
       new Where('eventStreamId').eq(streamId)
     );
@@ -125,7 +133,7 @@ export const connectDB = async (): Promise<Database> => {
       secret: process.env.TEXTILE_SECRET
     },
       names: {
-      thread: 'EventDB',
+      thread: 'EventDB2',
       collection: 'Events'
     }
   })

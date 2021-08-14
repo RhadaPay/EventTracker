@@ -7,9 +7,10 @@ const databaseMiddleware = (
     Make db available in the route
   */
   db: Database,
-): RequestHandler => (req: DBRequest, res, next) => {
+): RequestHandler => async (req: DBRequest, res, next) => {
   req.db = db;
+  // await db.testConnection();
   next();
 };
 
-export default databaseMiddleware;
+export default databaseMiddleware; 

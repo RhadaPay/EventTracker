@@ -14,9 +14,10 @@ class EventsController {
     try {
       const { db } = req;
       const { eventStreamId } = req.query;
-      console.log(eventStreamId)
+
       let message = 'findAll';
       let data: Event[];
+
 
       if (eventStreamId) {
         const nStreamId = Number(eventStreamId);
@@ -27,7 +28,7 @@ class EventsController {
       };
 
       res.status(200).json({ data, message });
-    } catch (error){
+    } catch (error) {
       next(error)
     }
   }

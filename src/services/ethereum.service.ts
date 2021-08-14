@@ -27,9 +27,12 @@ export class EthereumService {
     **/
 
     const { eventStreamId } = event;
+    console.log('Starting event ingest');
     const jobs = await this.fetchAllJobs();
     const jobsByEventsStream = this.filterJobsByEventStream(eventStreamId, jobs);
     let eventsByStream = await db.getEventsByStream(eventStreamId);
+    console.log('Here with jobs', jobsByEventsStream.length);
+
 
     this.addMockEventsIfNoneExist(db, eventStreamId, eventsByStream);
     this.printReport(jobsByEventsStream, eventStreamId, eventsByStream);
@@ -77,9 +80,9 @@ export class EthereumService {
     return jobs;
   }
 
-  public async getOneJob(jobId: number): Promise<Job | undefined> {
-    return await this.contract.jobs(jobId);
-  };
+  // public async getOneJob(jobId: number): Promise<Job | undefined> {
+  //   return await this.contract.jobs(jobId);
+  // };
 
 
   public filterJobsByEventStream (eventStreamId: number, jobs: Job[]): JobWId[] | [] {
@@ -132,7 +135,7 @@ export class EthereumService {
 
   public async sendStreamAdjustment (jobId: number, numberOfEvents: number): Promise<void> {
     console.log(`Sent stream adjustment for job ${jobId} with number of events ${numberOfEvents}`);
-    // this.contract.increaseCashflowAllowance(jobId, numberOfEvents) 
+    await this.contract.increaseCashflowAllowance(jobId, numberOfEvents);
+    console.log('Stream should now be adjusted');
   }
-
 }

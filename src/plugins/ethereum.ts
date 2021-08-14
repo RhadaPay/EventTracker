@@ -20,3 +20,4 @@ export const connectToContract = (wallet: Wallet, address: string): RhadaPay => 
 
 export const wallet = createWallet(INFURA_ENDPOINT, PRIVATE_KEY);
 export const contract = connectToContract(wallet, CONTRACT_ADDRESS);
+  
